@@ -8,7 +8,7 @@ Stopword list used from https://github.com/stopwords-iso/stopwords-fr/blob/maste
 import json
 import os
 import re
-
+import urllib
 import requests
 from config import GMAPS_API_KEY
 
@@ -95,42 +95,34 @@ class BotResponse:
 
         return wiki_article_intro
 
+    def build_URL(self, search_text='',types_text=''):
+        base_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'     # Can change json to xml to change output type
+        key_string = '?key='+ GMAPS_API_KEY                                           # First think after the base_url starts with ? instead of &
+        query_string = '&query='+urllib.parse.quote(search_text)
+        sensor_string = '&sensor=false'                                             # Presumably you are not getting location from device GPS
+        type_string = ''                   # More on types: https://developers.google.com/places/documentation/supported_types
+        url = base_url+key_string+query_string+sensor_string+type_string
+        return url
+
     def get_gmaps_info(self):
         """Gets the information from gmaps about the parsed text, returns googlemaps_response and
         sets gmaps_json, name, and address if ok.
         :rtype: string
         """
 
-        search_term = self.user_message_parsed
-        api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
+        api_url = self.build_URL(self.user_message_parsed)
 
-        # payload = {
-        #    "key": GMAPS_API_KEY,
-        #    "inputtype": "textquery",
-        #    "locationbias": "point:48.856614,2.3522219",
-        #    "language": "fr",
-        #    "input": search_term,
-        #    "type": "street_address",
-        #    "fields": "formatted_address,geometry,name,place_id",
-        # }
-        params = {
-            "input": search_term,
-            "inputtype": "textquery",
-            "fields": "formatted_address,geometry,name",
-            "language": "fr",
-            "key": GMAPS_API_KEY,
-        }
+        resp = requests.get(api_url)
+        data = json.loads(resp.text)
 
-        req = requests.get(api_url, params=params).json()
-        try:
-            response = {"status": req["status"]}
-            if response["status"] == "OK":
-                # response["coords"] = req["candidates"][0]["geometry"]["location"]
-                self.address = req["candidates"][0]["formatted_address"]
-                self.name = req["candidates"][0]["name"]
-                return "OK"
-            else:
+        self.gmaps_json = data
+        print(data['status'])
+        if data['status'] != 'ZERO_RESULTS':
+            try:
+                self.name = data['candidates'][0]['name']
+                self.address = data['candidates'][0]['formatted_address']
+            except IndexError:
                 return "No result"
-        except (KeyError, IndexError):
-            response = {"status": "PROBLEM_OCCURRED"}
+            return "OK"
+        else:
             return "No result"

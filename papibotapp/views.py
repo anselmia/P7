@@ -1,3 +1,5 @@
+import pdb
+
 from flask import Flask, jsonify, render_template, request
 
 from .grandpy import GMAPS_API_KEY, BotResponse
@@ -17,6 +19,7 @@ def home():
 
 @app.route("/_response", methods=["POST"])
 def response():
+    print(request.form["user_message"])
     bot_response = BotResponse(request.form["user_message"])
 
     print(bot_response.user_message)
