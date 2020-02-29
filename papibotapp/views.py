@@ -16,7 +16,7 @@ app.config.from_object("papibotapp.config")
 @app.route("/index/")
 def home():
     form = EntryForm()
-    return render_template("pages/index.html", form=form)
+    return render_template("pages/index.html", form=form, gmapskey=app.config["GOOGLE_API_KEY"])
     # return render_template("pages/index.html", gmapskey=app.config["GMAPS_API_KEY"])
 
 

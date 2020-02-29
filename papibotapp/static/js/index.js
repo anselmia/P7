@@ -1,4 +1,6 @@
-$(function () {
+var maps_api_url = "https://maps.googleapis.com/maps/api/js?key=" + $GMAPS_KEY;
+
+$.getScript(maps_api_url, function () {
     function initializeMap(geometry, id) {
 
         var myLatLng = geometry.location;
@@ -88,7 +90,7 @@ $(function () {
                             var element = document.getElementById("mapid");
                             element.parentNode.removeChild(element);
                         }
-                        $msg_card_body.append('<div class="d-flex justify-content-start mb-4"' +
+                        $('<div class="d-flex justify-content-start mb-4"' +
                             ' id="grandpy_msg_template">' +
                             '<div class="img_cont_msg">' +
                             '<img src="../static/images/grandfather.png" class="rounded-circle user_img_msg"></div>' +
@@ -96,13 +98,12 @@ $(function () {
                             '<div id="mapid">' +
                             '</div>' +
                             '</div>' +
-                            '</div>');
-                        $("<div></div>").hide().appendTo($("#mapid")).fadeIn('slow', function () {
+                            '</div>').appendTo($msg_card_body);
 
-                            initializeMap(answer['geometry'],
-                                document.getElementById("mapid"));
 
-                        });
+                        initializeMap(answer['geometry'],
+                            document.getElementById("mapid"));
+
                     }
                     $("#grandpy_writing").hide();
                     playSound()
