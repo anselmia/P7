@@ -4,38 +4,53 @@
 
 {% block body %}
 
-<div id="map">
+<div class="col-md-8 col-xl-6 container chat mt-5">
+    <div class="card">
+        <div class="card-header msg_head d-flex h-10">
+            <div class="d-flex bd-highlight">
+            </div>
+        </div>
+        <div class="card-body" id="msg_card_body">
+
+            <div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">
+                <div class="img_cont_msg">
+                    <img src="{{ url_for('static', filename='images/grandfather.png') }}"
+                         class="rounded-circle user_img_msg">
+                </div>
+                <div class="msg_cotainer">
+                    <p class="small">Que souhaites-tu que je te raconte mon petit ?</p>
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator" id="grandpy_writing">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="card-footer">
+            <form id="EntryForm" method="POST" action="">
+                <div>
+                    {{ form.hidden_tag() }}
+                    <div class="input-group">
+                        {{ form.entry(class="form-control
+                        type_msg", id="text",
+                        placeholder="Que voulez vous demander à GrandPy ?", type="text") }}
+                        <div class="send_btn">
+                            {{ form.submit(type="submit", class="btn send_btn_elt
+                            btn-outline-info") }}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 <div class="container-fluid">
 	<div class="row">
-		<div class="col-lg-9">
+		<div class="col-sm-10">
   			<legend>Find a location !</legend>
-			<div class="row">
-				<div class="col-lg-8">					
-    				<input id="user_message" type="text" class="form-control">
-				</div>
-				<div class="col-lg-1">					
-    				<span class="input-group-btn"><button id="submit" class="btn btn-primary" type="submit">Envoyer</button></span>
-				</div>
-			</div>
-		</div>
-	</div>
-	</br>
-	<div class="row">
-		<div class="col-md-12">			
-			<div class="jumbotron">
-				
-				<div class="col-sm-12">
-        			<div class="row">
-        		    	<div class="col-sm-6">
-							<div id = "answer">
-							</div>
-        		    	</div>
-        		    	<div class="col-sm-6">
-        		   		</div>
-        			</div>
-        		</div>				
-			</div>
 			<div id="wait_msg" class="col-lg-offset-3 col-lg-6">
 	            <div class="row">
 	                <div class='message bot' id='wait'>
@@ -43,7 +58,34 @@
 	                    Merci de patienter, je réfléchis...                    
 					</div>
 	            </div>
-	        </div>	
+	        </div>
+			<div class="row">
+				<div class="col-sm-8">					
+    				<input id="user_message" type="text" class="form-control">
+				</div>
+				<div class="col-sm-2">					
+    				<span class	"input-group-btn"><button id="submit" class="btn btn-primary" type="submit">Envoyer</button></span>
+				</div>
+			</div>			
+		</div>
+	</div>
+	</br>
+	<div class="row">
+		<div class="col-md-12">			
+			<div class="jumbotron">				
+				<div class="col-sm-12">
+        			<div class="row">
+        		    	<div class="col-sm-6">
+							<div id = "answer">
+							</div>
+        		    	</div>
+        		    	<div class="col-sm-6">
+							<div id="map">
+							</div>
+        		   		</div>
+        			</div>
+        		</div>				
+			</div>			
 		</div>
 	</div>
 </div>

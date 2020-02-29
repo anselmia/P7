@@ -5,124 +5,127 @@
 Module used for GrandPy Bot
 Stopword list used from https://github.com/stopwords-iso/stopwords-fr/blob/master/stopwords-fr.json
 """
-import json
-import os
+
 import re
 import urllib
+
 import requests
-from config import GMAPS_API_KEY
+from flask import jsonify
+from unidecode import unidecode
+
+from papibotapp.answer import Answer
+from papibotapp.config import GOOGLE_API_KEY
+from papibotapp.map import Map
+from papibotapp.parser import Parser
+from papibotapp.wiki import Wiki
 
 
-class BotResponse:
-    def __init__(self, user_message):
-        # Adding space before and after message for parsing.
-        self.user_message = user_message
-        self.user_message_parsed = self.parse_text()
-        self.name = "No result"
-        self.address = "No result"
-        self.wiki_response_html = (
-            "Je n'ai pas compris la demande ou je ne connais pas d'histoire à ce sujet."
-        )
-        self.wiki_json = ""
-        self.gmaps_response = "No result"
-        self.gmaps_json = ""
+class GrandPy:
+    """Contains main algorithms for the application"""
 
-        if self.user_message_parsed != "":
-            self.wiki_response_html = self.get_wiki_info()
-            self.gmaps_response = self.get_gmaps_info()
+    def __init__(self, question):
+        self.answer = None
+        self.wiki_answer = None
+        self.map_answer = None
+        self.question = question
+        self.parsed_question = None
+        self.cleaned_question = None
+        self.wiki = None
+        self.map = None
 
-    def parse_text(self):
-        """Parses the attribute self.user_message. Sets chars to lowerkey, strips punctuation and removes words
-        that are in stopwords.json. Returns user_message_parsed
-        :rtype: string
-        """
-        try:
-            with open(os.path.dirname(os.path.abspath(__file__)) + "\\stopword.json") as f:
-                stopwords = json.load(f)
-        except IOError as err:
-            print("Error loading stopword file : " + str(err))
-            stopwords = "error"
-
-        # Remove all punctuation and make text lowercase with a regex
-
-        string_no_punctuation = re.sub(r"[-,.;@#?!&$'()<>/]+ *", " ", self.user_message.lower(),)
-
-        words_to_parse = string_no_punctuation.split()
-        result_words = []
-
-        for word in words_to_parse:
-            if word not in stopwords:
-                result_words.append(word)
-        parsed_text = " ".join(result_words)
-
-        return parsed_text
-
-    def get_wiki_info(self):
-        """Gets the 5 first sentences from wikipedia for the article about the parsed text
-        :rtype: string
-        """
-        search_term = self.user_message_parsed
-        api_url = "https://fr.wikipedia.org/w/api.php"
-        payload = {
-            "action": "query",
-            "prop": "extracts",
-            "exintro": 1,
-            "explaintext": 1,
-            "format": "json",
-            "indexpageids": 1,
-            "exsentences": 5,
-            "generator": "search",
-            "gsrlimit": 1,
-            "gsrsearch": search_term,
-        }
-
-        resp = requests.get(api_url, params=payload)
-        self.wiki_json = json.loads(resp.text)
-
-        try:
-            article_id = self.wiki_json["query"]["pageids"][0]
-            wiki_article_intro = self.wiki_json["query"]["pages"][article_id]["extract"]
-            wiki_link = "http://fr.wikipedia.org/?curid=" + article_id
-            wiki_article_intro = (
-                wiki_article_intro
-                + ' <a href="'
-                + wiki_link
-                + '" target="_blank">En savoir plus sur wikipédia.</a>'
+    def json_answer(self):
+        """Check answer and return them in the json format"""
+        if self.map_answer and self.wiki_answer:
+            return jsonify(
+                {
+                    "answer": self.answer,
+                    "wiki_answer": self.wiki_answer,
+                    "geometry": self.map.geometry,
+                }
             )
-
-        except KeyError:
-            wiki_article_intro = self.wiki_response_html
-
-        return wiki_article_intro
-
-    def build_URL(self, search_text='',types_text=''):
-        base_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'     # Can change json to xml to change output type
-        key_string = '?key='+ GMAPS_API_KEY                                           # First think after the base_url starts with ? instead of &
-        query_string = '&query='+urllib.parse.quote(search_text)
-        sensor_string = '&sensor=false'                                             # Presumably you are not getting location from device GPS
-        type_string = ''                   # More on types: https://developers.google.com/places/documentation/supported_types
-        url = base_url+key_string+query_string+sensor_string+type_string
-        return url
-
-    def get_gmaps_info(self):
-        """Gets the information from gmaps about the parsed text, returns googlemaps_response and
-        sets gmaps_json, name, and address if ok.
-        :rtype: string
-        """
-
-        api_url = self.build_URL(self.user_message_parsed)
-
-        resp = requests.get(api_url)
-        data = json.loads(resp.text)
-
-        self.gmaps_json = data
-        print(data['status'])
-        if data['status'] != 'ZERO_RESULTS':
-            try:
-                self.name = data['candidates'][0]['name']
-                self.address = data['candidates'][0]['formatted_address']
-            except IndexError:
-                return "No result"
-            return "OK"
+        elif self.map_answer:
+            return jsonify({"answer": self.answer, "geometry": self.map.geometry,})
+        elif self.wiki_answer:
+            return jsonify({"answer": self.answer, "wiki_answer": self.wiki_answer})
         else:
-            return "No result"
+            return jsonify({"answer": self.answer})
+
+    def clean_question_from_false_spaces(self):
+        """clean and return a string without separating special chars"""
+        newquestion = self.question
+        newquestion = newquestion.replace("'", " ")
+        newquestion = newquestion.replace("-", " ")
+        return newquestion
+
+    def clean_question_from_list(self, lst):
+        """clean the questions of indesirable characters"""
+        list_question = self.question.split(" ")
+        new_list_question = []
+        for x in list_question:
+            new_list_question.append(re.sub("[^A-Za-z0-9]+", "", x.lower()))
+        new_list_question = [x for x in new_list_question if x.lower() not in lst]
+        return " ".join(new_list_question)
+
+    def clean_question_for_search(self):
+        """return the final searched words"""
+        questioncleaned = self.parsed_question
+        list_question = questioncleaned.split(" ")
+        new_list_question = []
+        for x in list_question:
+            new_list_question.append(re.sub("[^A-Za-z0-9]+", "", x.lower()))
+        return " ".join(new_list_question)
+
+    def generate_questions(self):
+        """Generate questions for parser and searches"""
+        self.question = unidecode(self.question)
+        self.question = self.clean_question_from_false_spaces()
+        self.parsed_question = self.clean_question_from_list(p.stop_words)
+        self.cleaned_question = self.clean_question_for_search()
+
+    def grandpyTalk(self):
+        """main function of answer"""
+        self.generate_questions()
+        self.check_easy_answer()
+        if self.answer is None:
+            self.wiki = Wiki(self.cleaned_question)
+            if self.wiki.response:
+                self.wiki_answer = self.wiki.response
+            self.map = Map(self.cleaned_question)
+
+            self.answer = a.random_answer(a.answer_location_find)
+            self.map_answer = a.random_answer(a.answer_location_here)
+        return self.json_answer()
+
+    def check_easy_answer(self):
+        """check if the answer deserve a simple answer"""
+        if self.question.isdigit():
+            self.answer = a.get_stupid_answer(0)
+        elif "merci" in self.question.lower():
+            self.answer = a.get_stupid_answer(5)
+        elif "bonjour" in self.question.lower():
+            self.answer = a.random_answer(a.answer_hello)
+        elif not re.search(r"[^.]", self.question):
+            self.answer = a.get_stupid_answer(1)
+        elif not re.search(r"[^!]", self.question):
+            self.answer = a.get_stupid_answer(2)
+        elif not re.search(r"[^zZ]", self.question):
+            self.answer = a.get_stupid_answer(3)
+        elif not re.search("[a-zA-Z]", self.question):
+            self.answer = a.get_stupid_answer(4)
+        elif self.cleaned_question == "":
+            self.answer = a.random_answer(Answer.answer_too_old)
+
+    def grandpy_find_wiki(self):
+        """Return an answer with the wiki api"""
+        self.answer = a.random_answer(a.answer_wiki_find)
+        if self.wiki.is_location():
+            self.map_answer = a.random_answer(a.answer_location_here)
+            self.coord_lat = self.wiki.lat
+            self.coord_long = self.wiki.long
+            self.wiki_answer = self.wiki.getSummary()
+        else:
+            self.wiki_answer = self.wiki.getSummary()
+
+
+p = Parser()
+a = Answer()

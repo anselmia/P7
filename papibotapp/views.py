@@ -2,41 +2,28 @@ import pdb
 
 from flask import Flask, jsonify, render_template, request
 
-from .grandpy import GMAPS_API_KEY, BotResponse
+from .forms import EntryForm
+from .grandpy import GrandPy
 
 app = Flask(__name__)
 
 # Config options - Make sure you created a 'config.py' file.
-app.config.from_object("config")
+app.config.from_object("papibotapp.config")
 # To get one variable, tape app.config['MY_VARIABLE']
 
 
 @app.route("/")
 @app.route("/index/")
 def home():
-    return render_template("pages/index.html", gmapskey=app.config["GMAPS_API_KEY"])
+    form = EntryForm()
+    return render_template("pages/index.html", form=form)
+    # return render_template("pages/index.html", gmapskey=app.config["GMAPS_API_KEY"])
 
 
 @app.route("/_response", methods=["POST"])
 def response():
-    print(request.form["user_message"])
-    bot_response = BotResponse(request.form["user_message"])
-
-    print(bot_response.user_message)
-    wiki_reply = bot_response.wiki_response_html
-    gmap_reply = bot_response.gmaps_response
-    print(bot_response.user_message_parsed)
-    gmaps_address = bot_response.address
-    gmaps_name = bot_response.name
-    gmaps_json = bot_response.gmaps_json
-
-    return jsonify(
-        wiki_reply=wiki_reply,
-        gmaps_reply=gmap_reply,
-        gmaps_address=gmaps_address,
-        gmaps_name=gmaps_name,
-        gmaps_json=gmaps_json,
-    )
+    grandpy = GrandPy(request.form["text"])
+    return grandpy.grandpyTalk()
 
 
 @app.route("/about")

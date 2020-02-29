@@ -11,13 +11,20 @@
 
     <title>{% block title %}GrandPy Bot{% endblock %}</title>
 
-    <!-- Required link tags -->
-    <link rel="icon" href="../../favicon.ico">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+          crossorigin="anonymous">
 
-    <!-- Bootstrap CSS -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    
+    <link type="text/css" href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
 
+    <audio id="audio"
+           src="https://notificationsounds.com/soundfiles/ff4d5fbbafdf976cfdc032e3bde78de5/file-sounds-948-just-like-magic.mp3"
+           autoplay="false"></audio>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js" rel="stylesheet">
@@ -29,14 +36,12 @@
     {% block body %}{% endblock %}
 
     <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-    <script type=text/javascript>
-      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    </script>
   </body>
 
 {% include 'layouts/partials/_footer.html'%}
