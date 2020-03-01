@@ -1,4 +1,5 @@
-var maps_api_url = "https://maps.googleapis.com/maps/api/js?key=" + $GMAPS_KEY;
+
+var maps_api_url = 'https://maps.googleapis.com/maps/api/js?key=' + $GMAPS_KEY;
 
 $.getScript(maps_api_url, function () {
     function initializeMap(geometry, id) {
@@ -44,17 +45,16 @@ $.getScript(maps_api_url, function () {
         }, 3000);
     }
 
-    var $msg_card_body, EntryForm;
-    $msg_card_body = $('#msg_card_body');
-    EntryForm = $('#EntryForm');
-    $("#grandpy_writing").hide();
+    var grandpy_writing = $('#grandpy_writing');
+    var msg_card_body = $('#msg_card_body');
+    var EntryForm = $('#EntryForm');
+
+    grandpy_writing.hide();
     EntryForm.on('submit', function (e) {
         e.preventDefault();
         var text = $.trim($('#text').val());
-        text = text.split('<').join('&lt;');
-        text = text.split('>').join('&gt;');
         if (text.trim()) {
-            $msg_card_body.append('<div class="d-flex justify-content-end mb-4' +
+            msg_card_body.append('<div class="d-flex justify-content-end mb-4' +
                 ' main_user_img" id="user_msg_template">' +
                 '<div class="msg_cotainer_send">' +
                 '<p class="small">' + text + '</p>' +
@@ -65,11 +65,11 @@ $.getScript(maps_api_url, function () {
                 '</div>' +
                 '</div>');
             $.trim($('#text').val(''));
-            $("#msg_card_body").stop().animate({ scrollTop: $("#msg_card_body")[0].scrollHeight }, 1000);
-            $.post('/_response', { text: text }).done(function (answer) {
-                $("#grandpy_writing").show();
+            msg_card_body.stop().animate({ scrollTop: msg_card_body[0].scrollHeight }, 1000);
+            $.post('/response', { text: text }).done(function (answer) {
+                grandpy_writing.fadeIn('slow');
                 setTimeout(function () {
-                    $msg_card_body.append('<div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">' +
+                    msg_card_body.append('<div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">' +
                         '<div class="img_cont_msg">' +
                         '<img src="../static/images/grandfather.png" class="rounded-circle user_img_msg"></div>' +
                         '<div class="msg_cotainer">' +
@@ -77,7 +77,7 @@ $.getScript(maps_api_url, function () {
                         '</div>' +
                         '</div>');
                     if (answer['wiki_answer']) {
-                        $msg_card_body.append('<div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">' +
+                        msg_card_body.append('<div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">' +
                             '<div class="img_cont_msg">' +
                             '<img src="../static/images/grandfather.png" class="rounded-circle user_img_msg"></div>' +
                             '<div class="msg_cotainer">' +
@@ -98,23 +98,17 @@ $.getScript(maps_api_url, function () {
                             '<div id="mapid">' +
                             '</div>' +
                             '</div>' +
-                            '</div>').appendTo($msg_card_body);
+                            '</div>').appendTo(msg_card_body);
 
 
                         initializeMap(answer['geometry'],
                             document.getElementById("mapid"));
 
                     }
-                    $("#grandpy_writing").hide();
-                    playSound()
-                    $("#msg_card_body").stop().animate({ scrollTop: $("#msg_card_body")[0].scrollHeight }, 1000);
+                    grandpy_writing.hide();
+                    msg_card_body.stop().animate({ scrollTop: $("#msg_card_body")[0].scrollHeight }, 1000);
                 }, 3000);
             })
         }
     });
 });
-
-function playSound() {
-    var sound = document.getElementById("audio");
-    sound.play();
-};

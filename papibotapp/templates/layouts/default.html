@@ -11,23 +11,20 @@
 
     <title>{% block title %}GrandPy Bot{% endblock %}</title>
 
-   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
           integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
           crossorigin="anonymous">
-
+    <link rel="shortcut icon" href="https://addons.cdn.mozilla.net/favicon.ico">
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
     
-    <link type="text/css" href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
-
-    <audio id="audio"
-           src="https://notificationsounds.com/soundfiles/ff4d5fbbafdf976cfdc032e3bde78de5/file-sounds-948-just-like-magic.mp3"
-           autoplay="false"></audio>
+    <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/layouts.css') }}" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js">
 
     
   </head>
@@ -42,11 +39,7 @@
             crossorigin="anonymous"></script>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-    <script type=text/javascript>
-      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    </script>
   </body>
 
 {% include 'layouts/partials/_footer.html'%}
-
 </html>

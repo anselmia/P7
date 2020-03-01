@@ -20,7 +20,7 @@ def home():
     # return render_template("pages/index.html", gmapskey=app.config["GMAPS_API_KEY"])
 
 
-@app.route("/_response", methods=["POST"])
+@app.route("/response", methods=["POST"])
 def response():
     grandpy = GrandPy(request.form["text"])
     return grandpy.grandpyTalk()
