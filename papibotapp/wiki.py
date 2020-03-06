@@ -46,6 +46,6 @@ class Wiki:
             )
 
         except KeyError:
-            wiki_article_intro = self.wiki_response_html
+            wiki_article_intro = "Désolé je n'ai rien trouvé !"
 
         return wiki_article_intro

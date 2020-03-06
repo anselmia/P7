@@ -100,7 +100,6 @@ $.getScript(maps_api_url, function () {
                             '</div>' +
                             '</div>').appendTo(msg_card_body);
 
-
                         initializeMap(answer['geometry'],
                             document.getElementById("mapid"));
 
@@ -112,3 +111,17 @@ $.getScript(maps_api_url, function () {
         }
     });
 });
+
+$(function(){
+    var originalText, hoveredLink;
+    $('h4 + a').hover(
+      function(){
+        hoveredLink = $(this);
+        originalText = hoveredLink.text();
+        hoveredLink.text("Clique pour continuer !");
+      },
+      function(){
+        hoveredLink.text(originalText);
+      }
+    );
+  });

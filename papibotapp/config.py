@@ -1,0 +1,3 @@
+import os
+SECRET_KEY = os.urandom(32)
+GOOGLE_API_KEY = "AIzaSyCWoDALSfK2ElUDmX1hLAOVb0ArYDFslg0"

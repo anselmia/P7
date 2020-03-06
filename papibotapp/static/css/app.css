@@ -5,7 +5,7 @@ body, html {
     height: 100%;
     background: rgb(79, 102, 236);
     background: -webkit-linear-gradient(to right, rgb(21, 130, 233), rgb(48, 92, 175), rgb(9, 9, 80));
-    background: linear-gradient(to right, rgb(163, 171, 243), rgb(99, 146, 233), rgb(36, 36, 148));
+    background: linear-gradient(to right, rgb(21, 36, 177), rgb(99, 146, 233), rgb(36, 36, 148));
 }
 
 .chat {
@@ -17,6 +17,8 @@ body, html {
     height: 750px;
     border-radius: 15px !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 #grandpy_writing {
@@ -266,9 +268,9 @@ html .msg_cotainer, .msg_cotainer_send {
     background-image: -webkit-gradient(linear,
     left bottom,
     left top,
-    color-stop(0.44, rgb(122, 153, 217)),
+    color-stop(0.44, rgb(14, 25, 49)),
     color-stop(0.72, rgb(73, 125, 189)),
-    color-stop(0.86, rgb(28, 58, 148)));
+    color-stop(0.86, rgb(13, 25, 59)));
 }
 
 #mapid { height: 250px;

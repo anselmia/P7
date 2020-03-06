@@ -11,7 +11,7 @@ import urllib
 
 import requests
 from flask import jsonify
-from unidecode import unidecode
+import random
 
 from papibotapp.answer import Answer
 from papibotapp.config import GOOGLE_API_KEY
@@ -24,108 +24,62 @@ class GrandPy:
     """Contains main algorithms for the application"""
 
     def __init__(self, question):
-        self.answer = None
-        self.wiki_answer = None
-        self.map_answer = None
+        self.answer = Answer()
+        self.grandpy_answer = None
         self.question = question
-        self.parsed_question = None
         self.cleaned_question = None
         self.wiki = None
         self.map = None
 
+        self.get_response()
+
     def json_answer(self):
         """Check answer and return them in the json format"""
-        if self.map_answer and self.wiki_answer:
+        if self.map is not None and self.wiki is not None:
             return jsonify(
                 {
-                    "answer": self.answer,
+                    "answer": self.grandpy_answer,
                     "wiki_answer": self.wiki_answer,
                     "geometry": self.map.geometry,
                 }
             )
-        elif self.map_answer:
-            return jsonify({"answer": self.answer, "geometry": self.map.geometry,})
-        elif self.wiki_answer:
-            return jsonify({"answer": self.answer, "wiki_answer": self.wiki_answer})
+        elif self.map is not None:
+            return jsonify({"answer": self.grandpy_answer, "geometry": self.map.geometry})
+        elif self.wiki is not None:
+            return jsonify({"answer": self.grandpy_answer, "wiki_answer": self.wiki_answer})
         else:
-            return jsonify({"answer": self.answer})
-
-    def clean_question_from_false_spaces(self):
-        """clean and return a string without separating special chars"""
-        newquestion = self.question
-        newquestion = newquestion.replace("'", " ")
-        newquestion = newquestion.replace("-", " ")
-        return newquestion
-
-    def clean_question_from_list(self, lst):
-        """clean the questions of indesirable characters"""
-        list_question = self.question.split(" ")
-        new_list_question = []
-        for x in list_question:
-            new_list_question.append(re.sub("[^A-Za-z0-9]+", "", x.lower()))
-        new_list_question = [x for x in new_list_question if x.lower() not in lst]
-        return " ".join(new_list_question)
-
-    def clean_question_for_search(self):
-        """return the final searched words"""
-        questioncleaned = self.parsed_question
-        list_question = questioncleaned.split(" ")
-        new_list_question = []
-        for x in list_question:
-            new_list_question.append(re.sub("[^A-Za-z0-9]+", "", x.lower()))
-        return " ".join(new_list_question)
+            return jsonify({"answer": self.grandpy_answer})
 
     def generate_questions(self):
         """Generate questions for parser and searches"""
-        self.question = unidecode(self.question)
-        self.question = self.clean_question_from_false_spaces()
-        self.parsed_question = self.clean_question_from_list(p.stop_words)
-        self.cleaned_question = self.clean_question_for_search()
+        p = Parser(self.question)
+        self.cleaned_question = p.clean_question()
 
-    def grandpyTalk(self):
+    def get_response(self):
         """main function of answer"""
         self.generate_questions()
         self.check_easy_answer()
-        if self.answer is None:
+        if self.grandpy_answer is None:
             self.wiki = Wiki(self.cleaned_question)
             if self.wiki.response:
                 self.wiki_answer = self.wiki.response
             self.map = Map(self.cleaned_question)
-
-            self.answer = a.random_answer(a.answer_location_find)
-            self.map_answer = a.random_answer(a.answer_location_here)
+            print(self)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_location_find)
         return self.json_answer()
 
     def check_easy_answer(self):
+        random_answer = random
         """check if the answer deserve a simple answer"""
         if self.question.isdigit():
-            self.answer = a.get_stupid_answer(0)
-        elif "merci" in self.question.lower():
-            self.answer = a.get_stupid_answer(5)
-        elif "bonjour" in self.question.lower():
-            self.answer = a.random_answer(a.answer_hello)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif not re.search(r"[^.]", self.question):
-            self.answer = a.get_stupid_answer(1)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif not re.search(r"[^!]", self.question):
-            self.answer = a.get_stupid_answer(2)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif not re.search(r"[^zZ]", self.question):
-            self.answer = a.get_stupid_answer(3)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif not re.search("[a-zA-Z]", self.question):
-            self.answer = a.get_stupid_answer(4)
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif self.cleaned_question == "":
-            self.answer = a.random_answer(Answer.answer_too_old)
-
-    def grandpy_find_wiki(self):
-        """Return an answer with the wiki api"""
-        self.answer = a.random_answer(a.answer_wiki_find)
-        if self.wiki.is_location():
-            self.map_answer = a.random_answer(a.answer_location_here)
-            self.coord_lat = self.wiki.lat
-            self.coord_long = self.wiki.long
-            self.wiki_answer = self.wiki.getSummary()
-        else:
-            self.wiki_answer = self.wiki.getSummary()
-
-
-p = Parser()
-a = Answer()
+            self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
