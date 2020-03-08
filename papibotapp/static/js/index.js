@@ -85,7 +85,7 @@ $.getScript(maps_api_url, function () {
                             '</div>' +
                             '</div>');
                     }
-                    if (answer['geometry']) {
+                    if (answer['map_answer']) {
                         if (document.contains(document.getElementById("mapid"))) {
                             var element = document.getElementById("mapid");
                             element.parentNode.removeChild(element);
@@ -95,12 +95,13 @@ $.getScript(maps_api_url, function () {
                             '<div class="img_cont_msg">' +
                             '<img src="../static/images/grandfather.png" class="rounded-circle user_img_msg"></div>' +
                             '<div class="msg_cotainer" id="mapidbox">' +
+                            '<p class = "small">' + answer['map_answer']['adress'] + '</p>' +
                             '<div id="mapid">' +
                             '</div>' +
                             '</div>' +
                             '</div>').appendTo(msg_card_body);
 
-                        initializeMap(answer['geometry'],
+                        initializeMap(answer['map_answer']['geometry'],
                             document.getElementById("mapid"));
 
                     }
@@ -111,17 +112,3 @@ $.getScript(maps_api_url, function () {
         }
     });
 });
-
-$(function(){
-    var originalText, hoveredLink;
-    $('h4 + a').hover(
-      function(){
-        hoveredLink = $(this);
-        originalText = hoveredLink.text();
-        hoveredLink.text("Clique pour continuer !");
-      },
-      function(){
-        hoveredLink.text(originalText);
-      }
-    );
-  });

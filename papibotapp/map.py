@@ -19,11 +19,13 @@ class Map:
             "type": "street_address",
             "fields": "formatted_address,geometry,name,place_id",
         }
-        self.response = self.get_response()
+        self.formatted_address = None
+        self.get_response()
 
     def get_response(self):
         """return the response from arg"""
 
         request = requests.get(self.api_url, params=self.parameters).json()
         if request["status"] == "OK":
+            self.formatted_address = request["candidates"][0]["formatted_address"]
             self.geometry = request["candidates"][0]["geometry"]

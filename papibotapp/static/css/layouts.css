@@ -1,24 +1,52 @@
 .footer{
-    background: #152F4F;
-    color:white;
-    text-align:center !important;
-    
-    .links{
-      ul {list-style-type: none;}
-      li a{
-        color: white;
-        transition: color .2s;
-        &:hover{
-          text-decoration:none;
-          color:#4180CB;    
-          }
-      }
+  background: #152F4F;
+  color:white;
+  text-align:center !important;
+  
+  .links{
+    ul {list-style-type: none;}
+    li a{
+      color: white;
+      transition: color .2s;
+      &:hover{
+        text-decoration:none;
+        color:#4180CB;    
+        }
     }
-    
-    .copyright p{border-top:1px solid rgba(255,255,255,.1);} 
+    text-align:center !important;
+  }
+  
+  .copyright p{border-top:1px solid rgba(255,255,255,.1);} 
 }
 
 .menu{
-  background: #152F4F;
-  color:white;
+background: #152F4F;
+color:white;
+}
+
+.social:hover {
+  -webkit-transform: scale(1.1);
+  -moz-transform: scale(1.1);
+  -o-transform: scale(1.1);
+}
+.social {
+  -webkit-transform: scale(0.8);
+  /* Browser Variations: */
+  
+  -moz-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;
+}
+
+/*
+ Multicoloured Hover Variations
+*/
+
+.social-link:hover {
+  color: #3B5998;
+}
+.social-gh:hover {
+  color: #4099FF;
 }

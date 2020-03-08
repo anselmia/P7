@@ -22,7 +22,8 @@ class Wiki:
             "gsrlimit": 1,
             "gsrsearch": self.search,
         }
-        self.response = self.get_response()
+        self.answer = None
+        self.get_response()
 
     def get_response(self):
         """Get article data from a title"""
@@ -38,7 +39,7 @@ class Wiki:
             article_id = self.wiki_json["query"]["pageids"][0]
             wiki_article_intro = self.wiki_json["query"]["pages"][article_id]["extract"]
             wiki_link = "http://fr.wikipedia.org/?curid=" + article_id
-            wiki_article_intro = (
+            self.answer = (
                 wiki_article_intro
                 + ' <a href="'
                 + wiki_link
@@ -46,6 +47,4 @@ class Wiki:
             )
 
         except KeyError:
-            wiki_article_intro = "Désolé je n'ai rien trouvé !"
-
-        return wiki_article_intro
+            return

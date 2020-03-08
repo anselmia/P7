@@ -1,7 +1,9 @@
 import re
 
+
 class Parser:
     """Contains all list of words"""
+
     def __init__(self, question):
         self.question = question
         self.stop_words = [
@@ -684,11 +686,43 @@ class Parser:
 
     def clean_question(self):
         """clean and return a string without separating special chars"""
-        for ch in ['\\','`','*','_','{','}','[',']','(',')','>','#','+','-','.','!','$','\'', '=']:
+        for ch in [
+            "\\",
+            "`",
+            "*",
+            "_",
+            "{",
+            "}",
+            "[",
+            "]",
+            "(",
+            ")",
+            ">",
+            "#",
+            "+",
+            "-",
+            ".",
+            "!",
+            "$",
+            "^",
+            "?",
+            "'",
+            "&",
+            '"',
+            "=",
+            ",",
+            ":",
+            ";",
+            "/",
+        ]:
             if ch in self.question:
-                self.question = self.question.replace(ch,"")
-        list_question = self.question.split(" ")
-        new_list_question = []
+                self.question = self.question.replace(ch, "")
 
-        new_list_question = [x for x in list_question if x.lower() not in new_list_question]
+        list_question = self.question.split(" ")
+        list_question = [word for word in list_question if word not in self.stop_words]
+        new_list_question = []
+        new_list_question = [
+            word.lower() for word in list_question if word.lower() not in new_list_question
+        ]
+
         return " ".join(new_list_question)

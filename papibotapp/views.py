@@ -2,8 +2,9 @@ import pdb
 
 from flask import Flask, jsonify, render_template, request
 
-from .grandpy import GrandPy
 from papibotapp.forms import EntryForm
+
+from .grandpy import GrandPy
 
 app = Flask(__name__)
 
@@ -15,13 +16,15 @@ app.config.from_object("papibotapp.config")
 @app.route("/")
 @app.route("/index/")
 def home():
-    return render_template("pages/index.html", form = EntryForm(), gmapskey=app.config["GOOGLE_API_KEY"])
+    return render_template(
+        "pages/index.html", form=EntryForm(), gmapskey=app.config["GOOGLE_API_KEY"]
+    )
 
 
 @app.route("/response", methods=["POST"])
 def response():
-    bot_response = GrandPy(request.form["text"])
-    return bot_response.json_answer()
+    granpy = GrandPy(request.form["text"])
+    return granpy.bot_response
 
 
 @app.route("/about")
