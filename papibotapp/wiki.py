@@ -32,8 +32,8 @@ class Wiki:
         """
         api_url = "https://fr.wikipedia.org/w/api.php"
 
-        resp = requests.get(api_url, params=self.parameters)
-        self.wiki_json = json.loads(resp.text)
+        resp = requests.get(api_url, params=self.parameters).json()
+        self.wiki_json = resp
 
         try:
             article_id = self.wiki_json["query"]["pageids"][0]
@@ -45,6 +45,7 @@ class Wiki:
                 + wiki_link
                 + '" target="_blank">En savoir plus sur wikipédia.</a>'
             )
+            print(self.answer)
 
         except KeyError:
             return
