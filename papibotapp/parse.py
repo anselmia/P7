@@ -1,10 +1,15 @@
-import re
-
+""" Module to parse  """
 
 class Parser:
-    """Contains all list of words"""
+    """
+        Class to parse an imput text
+        Remove words from imput based on words conained in
+        attribute stop_words
+        Init with attribute question : text to parse
+    """
 
     def __init__(self, question):
+        """ Init function for class Parser"""
         self.question = question
         self.stop_words = [
             "a",
@@ -685,7 +690,11 @@ class Parser:
         ]
 
     def clean_question(self):
-        """clean and return a string without separating special chars"""
+        """
+            return a string without separating special chars
+            and without words in stop_words list
+        """
+
         for ch in [
             "\\",
             "`",
@@ -726,3 +735,13 @@ class Parser:
         ]
 
         return " ".join(new_list_question)
+
+def Test_Parser():
+    parser = Parser("OpenClassrooms??./:!")
+    cleaned = parser.clean_question()
+    assert parser.question != None
+    assert len(parser.stop_words) > 0
+    assert cleaned == "openclassrooms"
+
+if __name__ == "__main__":
+    Test_Parser()

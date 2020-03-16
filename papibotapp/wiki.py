@@ -1,3 +1,5 @@
+""" Module Import """
+
 import json
 import re
 
@@ -5,9 +7,13 @@ import requests
 
 
 class Wiki:
-    """Contains all the wiki api"""
+    """ Class to request the wiki api
+        Init with attribute search type : string
+    """
 
     def __init__(self, search):
+        """ Init function of the class Wiki """
+
         self.api_url = "https://fr.wikipedia.org/w/api.php"
         self.search = search
         self.parameters = {
@@ -26,8 +32,8 @@ class Wiki:
         self.get_response()
 
     def get_response(self):
-        """Get article data from a title"""
-        """Gets the 5 first sentences from wikipedia for the article about the parsed text
+        """ Get article data from a search text"""
+        """ Return an abstract of the article and link to read more
         :rtype: string
         """
         api_url = "https://fr.wikipedia.org/w/api.php"
@@ -45,7 +51,16 @@ class Wiki:
                 + wiki_link
                 + '" target="_blank">En savoir plus sur wikipédia.</a>'
             )
-            print(self.answer)
 
         except KeyError:
             return
+
+def Test_wiki():
+    wiki = Wiki("OpenClassrooms")
+    assert wiki.api_url == "https://fr.wikipedia.org/w/api.php"
+    assert wiki.search == "OpenClassrooms"
+    assert len(wiki.parameters) > 0
+    assert wiki.answer != None
+
+if __name__ == "__main__":
+    Test_wiki()

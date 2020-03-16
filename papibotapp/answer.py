@@ -1,8 +1,10 @@
+""" Import Section """
+
 import random
 
 
 class Answer:
-    """Contains all the answer"""
+    """ Class with list of possible answer """
 
     answer_stupid = [
         "Je n'y comprend rien !",
@@ -20,5 +22,13 @@ class Answer:
     ]
 
     def random_answer(self, list):
-        """Return a random answer"""
+        """ Return a random answer from a given list"""
         return random.choice(list)
+
+def test_map():
+    answer = Answer()
+    assert answer.random_answer(answer.answer_stupid) != None
+    assert answer.random_answer(answer.answer_location_find) != None
+
+if __name__ == "__main__":
+    test_map()

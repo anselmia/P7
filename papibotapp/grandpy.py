@@ -1,27 +1,23 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-Module used for GrandPy Bot
-Stopword list used from https://github.com/stopwords-iso/stopwords-fr/blob/master/stopwords-fr.json
+    Module import
 """
 
-import random
 import re
-import urllib
 
-import requests
-from flask import jsonify
+from flask import Flask
 
 from papibotapp.answer import Answer
-from papibotapp.config import GOOGLE_API_KEY
 from papibotapp.map import Map
-from papibotapp.parser import Parser
+from papibotapp.parse import Parser
 from papibotapp.wiki import Wiki
 
 
 class GrandPy:
-    """Contains main algorithms for the application"""
+    """
+        Main class of the application
+        Interact with class Map, Wiki, Parser and answer.
+        Init with attribute question
+    """
 
     def __init__(self, question):
         self.answer = Answer()
@@ -37,20 +33,13 @@ class GrandPy:
 
     def json_answer(self):
         """Check answer and return them in the json format"""
-        if self.map_answer is not None and self.wiki_answer is not None:
-            return jsonify(
-                {
-                    "answer": self.grandpy_answer,
-                    "wiki_answer": self.wiki_answer,
-                    "map_answer": self.map_answer,
-                }
-            )
-        elif self.map is not None:
-            return jsonify({"answer": self.grandpy_answer, "map_answer": self.map_answer})
-        elif self.wiki is not None:
-            return jsonify({"answer": self.grandpy_answer, "wiki_answer": self.wiki_answer})
-        else:
-            return jsonify({"answer": self.grandpy_answer})
+        response = {}
+        response["answer"] = self.grandpy_answer
+        if self.map_answer is not None:
+            response["map_answer"] = self.map_answer
+        if self.wiki_answer is not None:
+            response["wiki_answer"] = self.wiki_answer
+        return response
 
     def generate_questions(self):
         """Generate questions for parser and searches"""
@@ -58,7 +47,11 @@ class GrandPy:
         self.cleaned_question = p.clean_question()
 
     def get_response(self):
-        """main function of answer"""
+        """
+            main function
+            Interact with class Map, Wiki, Parser and answer
+            to get an answer from each.
+        """
         self.generate_questions()
         self.check_easy_answer()
         if self.grandpy_answer is None:
@@ -78,8 +71,8 @@ class GrandPy:
         return self.json_answer()
 
     def check_easy_answer(self):
-        random_answer = random
-        """check if the answer deserve a simple answer"""
+        """ check if the answer deserve a simple answer """
+
         if self.question.isdigit():
             self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif not re.search(r"[^.]", self.question):
@@ -92,3 +85,23 @@ class GrandPy:
             self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
         elif self.cleaned_question == "":
             self.grandpy_answer = self.answer.random_answer(self.answer.answer_stupid)
+
+def test_granpy():
+    """ Module test """
+
+    app = Flask(__name__)
+    with app.app_context():
+        grandpy = GrandPy("OpenClassrooms??./:!")
+        bot_response = grandpy.get_response()
+        assert "answer" in bot_response
+        assert "wiki_answer" in bot_response
+        assert "map_answer" in bot_response
+
+        grandpy = GrandPy("")
+        bot_response = grandpy.get_response()
+        assert "answer" in bot_response
+        assert "wiki_answer" not in bot_response
+        assert "map_answer" not in bot_response
+
+if __name__ == "__main__":
+    test_granpy()

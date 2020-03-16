@@ -68,7 +68,7 @@ $.getScript(maps_api_url, function () {
             msg_card_body.stop().animate({ scrollTop: msg_card_body[0].scrollHeight }, 1000);
             $.post('/response', { text: text }).done(function (answer) {
                 grandpy_writing.fadeIn('slow');
-                setTimeout(function () {
+                setTimeout(functcion () {
                     msg_card_body.append('<div class="d-flex justify-content-start mb-4" id="grandpy_msg_template">' +
                         '<div class="img_cont_msg">' +
                         '<img src="../static/images/grandfather.png" class="rounded-circle user_img_msg"></div>' +
